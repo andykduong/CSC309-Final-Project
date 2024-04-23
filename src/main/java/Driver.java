@@ -1,7 +1,4 @@
-import g4p_controls.G4P;
-import g4p_controls.GButton;
-import g4p_controls.GEvent;
-import g4p_controls.GImageButton;
+import g4p_controls.*;
 import processing.core.PApplet;
 import processing.core.PImage;
 
@@ -31,6 +28,7 @@ public class Driver extends PApplet{
     private final InstructionList instructionCopies = InstructionList.getInstance();
 
     private GImageButton btnPlay;
+    private GSlider speedSlider;
 
 
     @Override
@@ -77,6 +75,13 @@ public class Driver extends PApplet{
         btnPlay = new GImageButton(this, 180, 615, playButtonImgs);
         btnPlay.addEventHandler(this, "handleButtonEvents");
 
+        speedSlider = new GSlider(this, 25, 475, 275, 100, 30);
+        speedSlider.setLimits(50, 0, 100); // initial, left, right
+        speedSlider.setNbrTicks(3);
+        speedSlider.setShowTicks(true);
+        speedSlider.setLocalColorScheme(GConstants.ORANGE_SCHEME);
+        speedSlider.addEventHandler(this, "handleSliderEvents");
+
 
     }
 
@@ -119,9 +124,17 @@ public class Driver extends PApplet{
             t1.start();
         }
     }
+    public void handleSliderEvents(GSlider slider, GEvent event){
+        if (slider == speedSlider && event == GEvent.RELEASED){
+//            println(slider.getValueI());
+            WorldData.getWorldData().setSpeed(slider.getValueI());
+        }
+    }
 
     @Override
     public void mousePressed() {
+//        System.out.println("(x:"+mouseX + ", y:" + mouseY +")");
+
         //when on original blocks, will create copies and will automatically be dragging copies
         for(Instruction currInstruction: originalInstructions) {
             if (currInstruction.isMouseOver()) {

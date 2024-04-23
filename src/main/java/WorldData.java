@@ -11,6 +11,7 @@ public final class WorldData extends PropertyChangeSupport {
     private HashMap <String, ArrayList <Point>> levelMap;
     private HashMap <Point, String> tileMap;
     private int[] spider, bgColor;
+    private int speed = 500;
 
     private WorldData() {
         super( new Object() );
@@ -27,7 +28,15 @@ public final class WorldData extends PropertyChangeSupport {
         return worldData;
     }
 
-    public void setLevel( HashMap <String, ArrayList<Point>> level ) {
+    public void setSpeed(int speed) {
+        this.speed = speed * 50;
+    }
+
+    public int getSpeed() {
+        return speed;
+    }
+
+    public void setLevel(HashMap <String, ArrayList<Point>> level ) {
         setLevel( level, 5, 26, 26, 26 );
     }
 
