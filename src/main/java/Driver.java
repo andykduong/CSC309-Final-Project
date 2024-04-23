@@ -110,6 +110,8 @@ public class Driver extends PApplet{
         paintGreenBlock.drag();
         paintRedBlock.drag();
 
+        btnPlay.setEnabled(!WorldData.getWorldData().getGameState());
+
         for (Instruction currInstruction : InstructionList.getInstance().getSortedInstructions()) {
             currInstruction.drag();
             currInstruction.display();
@@ -119,6 +121,7 @@ public class Driver extends PApplet{
     public void handleButtonEvents(GImageButton imagebutton, GEvent event){
         if (imagebutton == btnPlay && event == GEvent.CLICKED){
             WorldData.getWorldData().resetWorld();
+            WorldData.getWorldData().setGameState(true);
             PlayButtonFunc playButtonFunc = new PlayButtonFunc();
             Thread t1 = new Thread(playButtonFunc);
             t1.start();

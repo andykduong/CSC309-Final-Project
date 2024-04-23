@@ -12,6 +12,7 @@ public final class WorldData extends PropertyChangeSupport {
     private HashMap <Point, String> tileMap;
     private int[] spider, bgColor;
     private int speed = 500;
+    private boolean gameState;
 
     private WorldData() {
         super( new Object() );
@@ -53,21 +54,6 @@ public final class WorldData extends PropertyChangeSupport {
         firePropertyChange( "numRows", null, numRows );
         firePropertyChange( "bgColor", null, bgColor );
         resetWorld();
-//        paintTile( 1, 1, "red");
-//        paintTile( 2, 1, "red");
-//        paintTile( 3, 1, "blue");
-//        paintTile( 4, 1, "blue");
-//        paintTile( 2, 2, "green");
-//        paintTile( 1, 2, "green");
-//        paintTile( 0, 4, "red");
-//        paintTile( 1, 4, "red");
-//        paintTile( 4, 4, "red");
-//        paintTile( 0, 4, "blue");
-//        paintTile( 2, 4, "blue");
-//        paintTile( 4, 4, "blue");
-//        paintTile( 1, 4, "green");
-//        paintTile( 2, 4, "green");
-//        paintTile( 4, 4, "green");
     }
 
     public int[] getSpider() {
@@ -96,7 +82,14 @@ public final class WorldData extends PropertyChangeSupport {
         return tileMap;
     }
 
-    public void paintTile( int x, int y, String color ) {
+    public void setGameState(boolean gameState) {
+        this.gameState = gameState;
+    }
+    public boolean getGameState(){
+        return this.gameState;
+    }
+
+    public void paintTile(int x, int y, String color ) {
         Point p = new Point( x, y );
         if ( tileMap.containsKey( p ) ) {
             tileMap.replace(p, color);

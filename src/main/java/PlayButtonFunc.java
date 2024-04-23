@@ -31,6 +31,7 @@ public class PlayButtonFunc implements Runnable{
                 myData.paintTile(dataSpider[0], dataSpider[1], color);
             }
         }
+        WorldData.getWorldData().setGameState(false);
     }
 
 
