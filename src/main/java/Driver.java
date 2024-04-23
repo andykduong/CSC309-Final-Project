@@ -1,9 +1,13 @@
 import g4p_controls.G4P;
 import g4p_controls.GButton;
 import g4p_controls.GEvent;
+import g4p_controls.GImageButton;
 import processing.core.PApplet;
 import processing.core.PImage;
+
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -24,10 +28,9 @@ public class Driver extends PApplet{
     private PaintInstruction paintRedBlock;
     private PImage closedDelete;
     private PImage openedDelete;
-    private PlayButtonGUI playButton;
     private final InstructionList instructionCopies = InstructionList.getInstance();
 
-    private GButton btnPlay;
+    private GImageButton btnPlay;
 
 
     @Override
@@ -37,7 +40,6 @@ public class Driver extends PApplet{
 
     @Override
     public void setup(){
-//        createGUI();
         worldData = WorldData.getWorldData();
         worldData.addPropertyChangeListener(worldView);
         LevelGenerator.makeLevels();
@@ -58,9 +60,6 @@ public class Driver extends PApplet{
         PImage paintRedBlockImage = loadImage("images/paint_red.png");
         paintRedBlock = new PaintInstruction(this, 1000, 500, paintRedBlockImage, "red");
 
-        PImage startButtonImg = loadImage("images/playButtonImg.png");
-        playButton = new PlayButtonGUI(this, 180, 615, startButtonImg);
-
         //drawing the trashcan images over the background
         closedDelete = loadImage("images/trash1.png");
         closedDelete.resize(100, 150);
@@ -73,14 +72,17 @@ public class Driver extends PApplet{
 
         originalInstructions = new Instruction[]{stepBlock, turnBlock, paintBlueBlock, paintGreenBlock, paintRedBlock};
 
-        btnPlay = new GButton(this, 180, 615, 350, 700);
-        btnPlay.addEventHandler(this, "handlePlayBtn");
+        String[] playButtonImgs = {"images/playButtonImg.png"};
+
+        btnPlay = new GImageButton(this, 180, 615, playButtonImgs);
+        btnPlay.addEventHandler(this, "handleButtonEvents");
+
+
     }
 
     @Override
     public void draw() {
         background(100, 100, 100);
-        playButton.display();
 
         for (Instruction currInstruction : originalInstructions) {
             currInstruction.display();
@@ -109,8 +111,8 @@ public class Driver extends PApplet{
         }
     }
 
-    private void handlePlayBtn(GButton button, GEvent event){
-        if (button == btnPlay && event == GEvent.CLICKED){
+    public void handleButtonEvents(GImageButton imagebutton, GEvent event){
+        if (imagebutton == btnPlay && event == GEvent.CLICKED){
             WorldData.getWorldData().resetWorld();
             PlayButtonFunc playButtonFunc = new PlayButtonFunc();
             Thread t1 = new Thread(playButtonFunc);
@@ -120,7 +122,6 @@ public class Driver extends PApplet{
 
     @Override
     public void mousePressed() {
-        playButton.mousePressed();
         //when on original blocks, will create copies and will automatically be dragging copies
         for(Instruction currInstruction: originalInstructions) {
             if (currInstruction.isMouseOver()) {
