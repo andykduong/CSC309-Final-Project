@@ -1,11 +1,12 @@
+import g4p_controls.G4P;
+import g4p_controls.GButton;
+import g4p_controls.GEvent;
 import processing.core.PApplet;
 import processing.core.PImage;
-
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.logging.Level;
+
 
 /**
  * @author Molly Sandler, Riya Badadare
@@ -26,6 +27,9 @@ public class Driver extends PApplet{
     private PlayButtonGUI playButton;
     private final InstructionList instructionCopies = InstructionList.getInstance();
 
+    private GButton btnPlay;
+
+
     @Override
     public void settings(){
         size(1200, 900);
@@ -33,6 +37,7 @@ public class Driver extends PApplet{
 
     @Override
     public void setup(){
+//        createGUI();
         worldData = WorldData.getWorldData();
         worldData.addPropertyChangeListener(worldView);
         LevelGenerator.makeLevels();
@@ -67,7 +72,11 @@ public class Driver extends PApplet{
         level.saveHashMap(map);
 
         originalInstructions = new Instruction[]{stepBlock, turnBlock, paintBlueBlock, paintGreenBlock, paintRedBlock};
+
+        btnPlay = new GButton(this, 180, 615, 350, 700);
+        btnPlay.addEventHandler(this, "handlePlayBtn");
     }
+
     @Override
     public void draw() {
         background(100, 100, 100);
@@ -97,6 +106,15 @@ public class Driver extends PApplet{
         for (Instruction currInstruction : InstructionList.getInstance().getSortedInstructions()) {
             currInstruction.drag();
             currInstruction.display();
+        }
+    }
+
+    private void handlePlayBtn(GButton button, GEvent event){
+        if (button == btnPlay && event == GEvent.CLICKED){
+            WorldData.getWorldData().resetWorld();
+            PlayButtonFunc playButtonFunc = new PlayButtonFunc();
+            Thread t1 = new Thread(playButtonFunc);
+            t1.start();
         }
     }
 
