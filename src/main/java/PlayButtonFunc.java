@@ -17,7 +17,7 @@ public class PlayButtonFunc implements Runnable{
         //per instruction send each instruction to their respective function
         for(Instruction instruction:instructions) {
             try {
-                Thread.sleep(500);
+                Thread.sleep(myData.getSpeed());
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }

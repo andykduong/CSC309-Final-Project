@@ -1,11 +1,13 @@
+import g4p_controls.*;
 import processing.core.PApplet;
 import processing.core.PImage;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.logging.Level;
+
 
 /**
  * @author Molly Sandler, Riya Badadare
@@ -23,8 +25,11 @@ public class Driver extends PApplet{
     private PaintInstruction paintRedBlock;
     private PImage closedDelete;
     private PImage openedDelete;
-    private PlayButtonGUI playButton;
     private final InstructionList instructionCopies = InstructionList.getInstance();
+
+    private GImageButton btnPlay;
+    private GSlider speedSlider;
+
 
     @Override
     public void settings(){
@@ -53,9 +58,6 @@ public class Driver extends PApplet{
         PImage paintRedBlockImage = loadImage("images/paint_red.png");
         paintRedBlock = new PaintInstruction(this, 1000, 500, paintRedBlockImage, "red");
 
-        PImage startButtonImg = loadImage("images/playButtonImg.png");
-        playButton = new PlayButtonGUI(this, 180, 615, startButtonImg);
-
         //drawing the trashcan images over the background
         closedDelete = loadImage("images/trash1.png");
         closedDelete.resize(100, 150);
@@ -67,11 +69,25 @@ public class Driver extends PApplet{
         level.saveHashMap(map);
 
         originalInstructions = new Instruction[]{stepBlock, turnBlock, paintBlueBlock, paintGreenBlock, paintRedBlock};
+
+        String[] playButtonImgs = {"images/playButtonImg.png"};
+
+        btnPlay = new GImageButton(this, 180, 615, playButtonImgs);
+        btnPlay.addEventHandler(this, "handleButtonEvents");
+
+        speedSlider = new GSlider(this, 25, 475, 275, 100, 30);
+        speedSlider.setLimits(50, 0, 100); // initial, left, right
+        speedSlider.setNbrTicks(3);
+        speedSlider.setShowTicks(true);
+        speedSlider.setLocalColorScheme(GConstants.ORANGE_SCHEME);
+        speedSlider.addEventHandler(this, "handleSliderEvents");
+
+
     }
+
     @Override
     public void draw() {
         background(100, 100, 100);
-        playButton.display();
 
         for (Instruction currInstruction : originalInstructions) {
             currInstruction.display();
@@ -100,9 +116,25 @@ public class Driver extends PApplet{
         }
     }
 
+    public void handleButtonEvents(GImageButton imagebutton, GEvent event){
+        if (imagebutton == btnPlay && event == GEvent.CLICKED){
+            WorldData.getWorldData().resetWorld();
+            PlayButtonFunc playButtonFunc = new PlayButtonFunc();
+            Thread t1 = new Thread(playButtonFunc);
+            t1.start();
+        }
+    }
+    public void handleSliderEvents(GSlider slider, GEvent event){
+        if (slider == speedSlider && event == GEvent.RELEASED){
+//            println(slider.getValueI());
+            WorldData.getWorldData().setSpeed(slider.getValueI());
+        }
+    }
+
     @Override
     public void mousePressed() {
-        playButton.mousePressed();
+//        System.out.println("(x:"+mouseX + ", y:" + mouseY +")");
+
         //when on original blocks, will create copies and will automatically be dragging copies
         for(Instruction currInstruction: originalInstructions) {
             if (currInstruction.isMouseOver()) {
