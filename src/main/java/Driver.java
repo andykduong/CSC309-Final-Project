@@ -153,6 +153,10 @@ public class Driver extends PApplet{
         paintRedBlock.drag();
         sandboxBtn.setVisible(true);
         sandboxBtn.setEnabled(true);
+        btnPlay.setEnabled(true);
+        btnPlay.setVisible(true);
+        speedSlider.setEnabled(true);
+        speedSlider.setVisible(true);
 
 
         btnPlay.setEnabled(!WorldData.getWorldData().getGameState());
