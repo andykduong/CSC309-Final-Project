@@ -23,16 +23,6 @@ public final class WorldView implements PropertyChangeListener {
     public WorldView(PApplet screen) {
         this.screen = screen;
     }
-//    public int[] getSpider() {
-//        return spider;
-//    }
-//
-//    public void readLevel() {
-////        edit if level has different size or background color
-//        numRows = 5;
-//        tileWidth = 60;
-//        bgColor = screen.color( 110, 113, 132 );
-//    }
 
     public void drawGrid() {
         screen.fill( bgColor );
