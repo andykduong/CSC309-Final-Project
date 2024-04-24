@@ -48,6 +48,22 @@ public final class WorldView implements PropertyChangeListener {
         }
     }
 
+    public void drawSandGrid(){
+        screen.color(50, 50, 50);
+        screen.fill(211, 211, 210);
+        screen.stroke(0, 0, 250);
+        screen.rect( leftPadding, topPadding, tileWidth * numRows, tileWidth * numRows );
+        for ( int row = 1; row < numRows; row++ ) {
+            screen.line( leftPadding, topPadding + tileWidth * row,
+                    leftPadding + tileWidth * numRows, topPadding + tileWidth * row );
+        }
+        for ( int col = 1; col < numRows; col++ ) {
+            screen.line( leftPadding + tileWidth * col, topPadding,
+                    leftPadding + tileWidth * col, topPadding + tileWidth * numRows );
+        }
+
+    }
+
     public void drawDiamonds() {
         screen.textSize( 12 );
         // draw red diamonds
@@ -119,6 +135,11 @@ public final class WorldView implements PropertyChangeListener {
         drawDiamonds();
         drawPaint();
     }
+
+    public void drawSandWorld(){
+        drawSandGrid();
+    }
+
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {

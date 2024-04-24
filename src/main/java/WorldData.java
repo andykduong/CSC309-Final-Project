@@ -2,6 +2,8 @@ import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import static processing.core.PApplet.println;
+
 /**
  * @author Jemma Arona
  */
@@ -111,5 +113,12 @@ public final class WorldData extends PropertyChangeSupport {
             moveSpider( 0, 0, 0 );
         }
     }
+
+    public void sandboxWorld(){
+        tileMap.clear();
+        println("cleared");
+
+    }
+
 }
 
