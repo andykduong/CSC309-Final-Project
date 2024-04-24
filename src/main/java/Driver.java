@@ -82,6 +82,11 @@ public class Driver extends PApplet{
         speedSlider.setLocalColorScheme(GConstants.ORANGE_SCHEME);
         speedSlider.addEventHandler(this, "handleSliderEvents");
 
+        BlockPanel blockPanel = new BlockPanel(this, 500, 400, 400, 400);
+
+        blockPanel.setDraggable(false);
+
+
 
     }
 
