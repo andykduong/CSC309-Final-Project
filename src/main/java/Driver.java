@@ -2,14 +2,8 @@ import g4p_controls.*;
 import processing.core.PApplet;
 import processing.core.PFont;
 import processing.core.PImage;
-
-import java.awt.*;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
-
 
 /**
  * @author Molly Sandler, Riya Badadare
@@ -19,7 +13,7 @@ public class Driver extends PApplet{
     private WorldData worldData;
     private final WorldView worldView = new WorldView(this);
     private LoadLevels level;
-    private Instruction[] originalInstructions;
+    private OriginalInstructions originalInstructions;
     private StepInstruction stepBlock;
     private TurnInstruction turnBlock;
     private PaintInstruction paintBlueBlock;
@@ -27,7 +21,7 @@ public class Driver extends PApplet{
     private PaintInstruction paintRedBlock;
     private PImage closedDelete;
     private PImage openedDelete;
-    private final InstructionList instructionCopies = InstructionList.getInstance();
+    private InstructionList instructionCopies = InstructionList.getInstance();
 
     private GImageButton btnPlay;
 
@@ -45,7 +39,7 @@ public class Driver extends PApplet{
     }
 
     ScreenState currentState = ScreenState.MAIN;
-
+    DragAndDropManager dragAndDropManager;
 
 
     @Override
@@ -85,7 +79,7 @@ public class Driver extends PApplet{
         worldData.setLevel(map);
         level.saveHashMap(map);
 
-        originalInstructions = new Instruction[]{stepBlock, turnBlock, paintBlueBlock, paintGreenBlock, paintRedBlock};
+        originalInstructions = new OriginalInstructions(stepBlock, turnBlock, paintBlueBlock, paintGreenBlock, paintRedBlock);
 
         String[] playButtonImgs = {"images/playButtonImg.png"};
 
@@ -103,7 +97,6 @@ public class Driver extends PApplet{
         mainWorldBtn.addEventHandler(this, "handleMainWorldButtonEvents");
         mainWorldBtn.setVisible(false);
 
-
         speedSlider = new GSlider(this, 25, 475, 275, 100, 30);
         speedSlider.setLimits(50, 0, 100); // initial, left, right
         speedSlider.setNbrTicks(3);
@@ -111,7 +104,7 @@ public class Driver extends PApplet{
         speedSlider.setLocalColorScheme(GConstants.ORANGE_SCHEME);
         speedSlider.addEventHandler(this, "handleSliderEvents");
 
-
+        dragAndDropManager = new DragAndDropManager(this, closedDelete);
     }
 
     @Override
@@ -131,8 +124,7 @@ public class Driver extends PApplet{
         background(100, 100, 100);
         mainWorldBtn.setVisible(false);
 
-
-        for (Instruction currInstruction : originalInstructions) {
+        for (Instruction currInstruction : OriginalInstructions.getInstance()) {
             currInstruction.display();
         }
 
@@ -144,13 +136,7 @@ public class Driver extends PApplet{
             image(closedDelete, 100, 600);
         }
 
-        //make blocks draggable
         worldView.drawWorld();
-        stepBlock.drag();
-        turnBlock.drag();
-        paintBlueBlock.drag();
-        paintGreenBlock.drag();
-        paintRedBlock.drag();
         sandboxBtn.setVisible(true);
         sandboxBtn.setEnabled(true);
         btnPlay.setEnabled(true);
@@ -158,13 +144,9 @@ public class Driver extends PApplet{
         speedSlider.setEnabled(true);
         speedSlider.setVisible(true);
 
-
         btnPlay.setEnabled(!WorldData.getWorldData().getGameState());
 
-        for (Instruction currInstruction : InstructionList.getInstance().getSortedInstructions()) {
-            currInstruction.drag();
-            currInstruction.display();
-        }
+        dragAndDropManager.makeDraggable();
     }
 
     public void drawSandbox(){
@@ -179,8 +161,6 @@ public class Driver extends PApplet{
         text("Welcome to SandBox", width / 2,  50);
 
     }
-
-
 
     public void handleButtonEvents(GImageButton imagebutton, GEvent event){
         if (imagebutton == btnPlay && event == GEvent.CLICKED){
@@ -220,70 +200,16 @@ public class Driver extends PApplet{
         sandboxBtn.setVisible(false);
         sandboxBtn.setEnabled(false);
         speedSlider.setVisible(false);
-
-
-
     }
-
 
     @Override
     public void mousePressed() {
-//        System.out.println("(x:"+mouseX + ", y:" + mouseY +")");
-
-        //when on original blocks, will create copies and will automatically be dragging copies
-        for(Instruction currInstruction: originalInstructions) {
-            if (currInstruction.isMouseOver()) {
-                Instruction copy = null; // Create a copy
-                try {
-                    copy = currInstruction.clone();
-                } catch (CloneNotSupportedException e) {
-                    throw new RuntimeException(e);
-                }
-                copy.mousePressed();
-                instructionCopies.addInstruction(copy); // Add the copy to the list
-                break;
-            }
-        }
-        //lets you drag around copies that you've dropped
-        for (Instruction copy : InstructionList.getInstance().getSortedInstructions()) {
-            copy.mousePressed();
-        }
+        dragAndDropManager.mousePressed();
     }
 
     @Override
     public void mouseReleased() {
-        List<Instruction> instructions = instructionCopies.getSortedInstructions();
-        List<Instruction> newInstructions = new ArrayList<>(instructions);
-
-        //dealing with release of instruction over trash can
-        for (Instruction currInstruction : instructions) {
-            currInstruction.isDragging = false;
-            if(currInstruction.getxPos() < 100 + closedDelete.width && currInstruction.getxPos() + 100 > 100 && currInstruction.getyPos() < 600 + closedDelete.height && currInstruction.getyPos() + 60 > 600 && currInstruction.isMouseOver()){
-                newInstructions.remove(currInstruction);
-            }
-        }
-
-        instructionCopies.setInstructions(newInstructions);
-        instructions = instructionCopies.getSortedInstructions();
-
-        // Snapping to other blocks
-        for (int i = 0; i < instructions.size(); i++) {
-            for (int j = 0; j < instructions.size(); j++) {
-                if (i == j) continue;
-                Instruction a = instructions.get(i);
-                Instruction b = instructions.get(j);
-
-                if (a.toSnap(b)) {
-                    if (a.yPos < b.yPos) {
-                        b.xPos = a.xPos;
-                        b.yPos = a.yPos + 50;
-                    } else {
-                        a.xPos = b.xPos;
-                        a.yPos = b.yPos + 50;
-                    }
-                }
-            }
-        }
+        dragAndDropManager.mouseReleased();
     }
 
     public static void main(String[] args) {
